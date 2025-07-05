@@ -8,10 +8,11 @@ datasource db {
 }
 
 model documents {
-  id          String   @id(map: "Documents_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title       String   @default("")
-  description String   @default("")
-  category    String   @default("")
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  id         String   @id(map: "Documents_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String   @default("")
+  content    String   @default("")
+  category   String   @default("")
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  author     String   @default("")
 }
