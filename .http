@@ -10,12 +10,7 @@ POST http://localhost:8000/documents
 DELETE http://localhost:8000/documents/
 
 ###
-PUT http://localhost:8000/documents/22e6cd11-b8fd-483f-ada0-910357bad32
-Content-Type: application/json
+PUT http://localhost:8000/documents/22e6cd11-b8fd-483f-ada0-910357bad328
 
-{
-  "title": "Fungo letal do faraó",
-  "category": "Científico",
-  "author": "Vinicius Yahagi Rios",
-  "content": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, voluptates! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, voluptates! Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem, voluptates!"
-}
+###
+GET http://localhost:8000/documents/search?q=3

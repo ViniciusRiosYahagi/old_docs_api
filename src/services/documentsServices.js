@@ -35,3 +35,16 @@ export async function update(id, body) {
     }
   })
 }
+
+export async function search(q) {
+  return await prisma.documents.findMany({
+    where: {
+      OR: [
+        { title: { contains: q, mode: "insensitive"} },
+        { content: { contains: q, mode: "insensitive"} },
+        { category: { contains: q, mode: "insensitive"}},
+        { author: { contains: q, mode: "insensitive"} }
+      ]
+    }
+  })
+}

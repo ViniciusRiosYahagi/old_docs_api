@@ -1,29 +1,15 @@
-import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
+
+import { document, dataRequired, searchQuery } from "../zod/zod.js";
+
 import {
   findMany,
   findUnique,
   create,
   deletee,
   update,
+  search,
 } from "../services/documentsServices.js";
-
-const document = z.object({
-  id: z.string(),
-  title: z.string(),
-  category: z.string(),
-  author: z.string(),
-  content: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-});
-
-const dataRequired = z.object({
-  title: z.string().min(3),
-  category: z.string().min(3),
-  author: z.string().min(3),
-  content: z.string().min(100),
-});
 
 export const listDocuments = {
   schema: {
@@ -112,6 +98,45 @@ export const updateDocument = {
     }
 
     const document = await update(id, parse.data);
+
+    reply.code(200).send(document);
+  },
+};
+
+export const searchDocument = {
+  schema: {
+    querystring: zodToJsonSchema(searchQuery),
+    response: {
+      200: {
+        type: "array",
+        items: zodToJsonSchema(document),
+      },
+    },
+  },
+  handler: async (req, reply) => {
+    const parse = searchQuery.safeParse(req.query);
+
+    if (!parse.success) {
+      const messages = parse.error.issues.map((issue) => ({
+        field: issue.path.join("."),
+        message: issue.message,
+      }));
+
+      return reply.code(400).send({
+        error: "Erro de validação na query",
+        details: messages,
+      });
+    }
+
+    const { q } = parse.data;
+
+    const document = await search(q);
+
+    if (document.length === 0) {
+      return reply.code(404).send({
+        message: `No documents found containing the keyword: ${q}.`,
+      });
+    }
 
     reply.code(200).send(document);
   },

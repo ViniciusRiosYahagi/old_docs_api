@@ -4,6 +4,7 @@ import {
   createDocument,
   deleteDocument,
   updateDocument,
+  searchDocument,
 } from "../schemas/documentsSchemas.js";
 
 export function documents(fastify, options, done) {
@@ -12,6 +13,7 @@ export function documents(fastify, options, done) {
   fastify.post("/", createDocument);
   fastify.delete("/:id", deleteDocument);
   fastify.put("/:id", updateDocument)
+  fastify.get("/search", searchDocument)
 
   done();
 }
