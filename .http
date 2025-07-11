@@ -1,17 +1,36 @@
 GET http://localhost:8000/documents
 
 ###
-GET http://localhost:8000/documents/09aa0e52-7211-4f95-8d68-7da6ded8aeb
-###
-
-POST http://localhost:8000/documents
-
+GET http://localhost:8000/documents/09aa0e52-7211-4f95-8d68-7da6ded8aeb3
 
 ###
-DELETE http://localhost:8000/documents/
+
+POST http://localhost:8000/documents/create
+Content-Type: application/json
+
+{
+  "title": "Title",
+  "category": "Category",
+  "author": "Author",
+  "content": "Content..........................................................................................................."
+}
 
 ###
-PUT http://localhost:8000/documents/22e6cd11-b8fd-483f-ada0-910357bad328
+
+PUT http://localhost:8000/documents/280ee47a-bf82-45f9-8445-dd3ea7a96f8e/edit
+Content-Type: application/json
+
+{
+  "title": "Title",
+  "category": "Category",
+  "author": "Author",
+  "content": "Content.......................................................................................................kkk"
+}
 
 ###
+
+DELETE http://localhost:8000/documents/280ee47a-bf82-45f9-8445-dd3ea7a96f8e
+
+###
+
 GET http://localhost:8000/documents/search?q=a
