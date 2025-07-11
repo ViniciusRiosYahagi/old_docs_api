@@ -1,6 +1,6 @@
 import zodToJsonSchema from "zod-to-json-schema";
-
 import { document, dataRequired, searchQuery } from "../zod/zod.js";
+import { messages } from "../errors/messages.js";
 
 import {
   findMany,
@@ -21,8 +21,15 @@ export const listDocuments = {
     },
   },
   handler: async (req, reply) => {
-    const items = await findMany();
-    reply.send(items);
+    try {
+      const documets = await findMany();
+      reply.code(200).send(documets);
+    } catch (error) {
+      req.log.error(error);
+      reply.code(500).send({
+        message: messages.INTERNAL_ERROR,
+      });
+    }
   },
 };
 
@@ -34,13 +41,21 @@ export const listDocument = {
   },
   handler: async (req, reply) => {
     const { id } = req.params;
-    const document = await findUnique(id);
 
-    if (!document) {
-      reply.code(404).send({ message: "Document not found" });
+    try {
+      const document = await findUnique(id);
+
+      if (!document) {
+        return reply.code(404).send({ message: messages.NOT_FOUND });
+      }
+
+      reply.code(200).send(document);
+    } catch (error) {
+      req.log.error(error);
+      return reply.code(500).send({
+        message: messages.FAILED_FETCH,
+      });
     }
-
-    reply.send(document);
   },
 };
 
@@ -55,12 +70,19 @@ export const createDocument = {
     const parse = dataRequired.safeParse(req.body);
 
     if (!parse.success) {
-      return reply.code(400).send({ error: parse.error });
+      return reply.code(400).send({
+        message: messages.FAILD_TO_CREATE,
+        errors: parse.error.flatten(),
+      });
     }
 
-    const item = await create(parse.data);
-
-    return reply.code(201).send(item);
+    try {
+      const item = await create(parse.data);
+      return reply.code(201).send(item);
+    } catch (error) {
+      req.log.error(error);
+      return reply.code(500).send({ message: messages.FAILD_TO_PROCESS });
+    }
   },
 };
 
@@ -73,11 +95,18 @@ export const deleteDocument = {
   handler: async (req, reply) => {
     const { id } = req.params;
 
+    if (!id) {
+      return reply
+        .code(400)
+        .send({ message: messages.INVALID_ID, errors: parse.error.flatten() });
+    }
+
     try {
       const document = await deletee(id);
       reply.code(200).send(document);
     } catch (error) {
-      reply.code(404).send({ error: "Item not found" });
+      req.log.error(error);
+      return reply.code(500).send({ message: messages.FAILD_TO_DELETE });
     }
   },
 };
@@ -91,15 +120,29 @@ export const updateDocument = {
   },
   handler: async (req, reply) => {
     const { id } = req.params;
+
+    if (!id) {
+      return reply
+        .code(400)
+        .send({ message: messages.INVALID_ID, errors: parse.error.flatten() });
+    }
+
     const parse = dataRequired.safeParse(req.body);
 
     if (!parse.success) {
-      return reply.code(400).send({ error: parse.error });
+      return reply.code(400).send({
+        message: messages.FAILD_TO_UPDATE,
+        errors: parse.error.flatten(),
+      });
     }
 
-    const document = await update(id, parse.data);
-
-    reply.code(200).send(document);
+    try {
+      const document = await update(id, parse.data);
+      reply.code(200).send(document);
+    } catch (error) {
+      req.log.error(error);
+      return reply.code(500).send({ message: messages.FAILD_TO_UPDATE });
+    }
   },
 };
 
@@ -115,29 +158,17 @@ export const searchDocument = {
   },
   handler: async (req, reply) => {
     const parse = searchQuery.safeParse(req.query);
-
-    if (!parse.success) {
-      const messages = parse.error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        message: issue.message,
-      }));
-
-      return reply.code(400).send({
-        error: "Erro de validação na query",
-        details: messages,
-      });
-    }
-
     const { q } = parse.data;
 
-    const document = await search(q);
-
-    if (document.length === 0) {
-      return reply.code(404).send({
-        message: `No documents found containing the keyword: ${q}.`,
-      });
+    try {
+      const document = await search(q);
+      if (!document) {
+        return reply.code(400).send({ message: messages.NOT_FOUND });
+      }
+      reply.code(200).send(document);
+    } catch (error) {
+      req.log.error(error);
+      return reply.code(500).send({ message: messages.FAILD });
     }
-
-    reply.code(200).send(document);
   },
 };

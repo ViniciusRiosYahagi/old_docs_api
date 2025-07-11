@@ -1,10 +1,11 @@
 GET http://localhost:8000/documents
 
 ###
-GET http://localhost:8000/documents/
+GET http://localhost:8000/documents/09aa0e52-7211-4f95-8d68-7da6ded8aeb
 ###
 
 POST http://localhost:8000/documents
+
 
 ###
 DELETE http://localhost:8000/documents/
@@ -13,4 +14,4 @@ DELETE http://localhost:8000/documents/
 PUT http://localhost:8000/documents/22e6cd11-b8fd-483f-ada0-910357bad328
 
 ###
-GET http://localhost:8000/documents/search?q=3
+GET http://localhost:8000/documents/search?q=a

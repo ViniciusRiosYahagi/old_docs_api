@@ -2,7 +2,8 @@ import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../plugins/prisma.js";
 
 export async function findMany() {
-  return await prisma.documents.findMany()
+  const result = await prisma.documents.findMany()
+  return result
 }
 
 export async function findUnique(id) {
