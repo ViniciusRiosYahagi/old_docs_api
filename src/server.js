@@ -1,10 +1,10 @@
 import { documents } from "./routes/documentsRoute.js";
-import cors from "@fastify/cors"
+import {fastifyCors} from "@fastify/cors"
 
 import Fastify from "fastify";
 const fastify = new Fastify({ logger: true });
 
-fastify.register(cors, { origin:true,  methods: ["GET", "POST", "PUT", "DELETE"]})
+fastify.register(fastifyCors, { origin: "*" })
 fastify.register(documents, { prefix: "/documents" });
 
 try {
